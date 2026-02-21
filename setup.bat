@@ -247,7 +247,7 @@ pip install ./tmp/wheels/cumesh-0.0.1-cp310-cp310-win_amd64.whl
 
 REM ----------------------------------------------------------------------------------------------------------------
 REM FLEXGEMM
-pip install ./tmp/wheels/flex_gemm-0.0.1-cp310-cp310-win_amd64.whl
+pip install ./tmp/wheels/flex_gemm-1.0.0-cp310-cp310-win_amd64.whl
 
 REM ----------------------------------------------------------------------------------------------------------------
 REM OVOXEL
