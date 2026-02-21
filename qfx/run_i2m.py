@@ -464,11 +464,7 @@ def generate(input_filelist):
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
 
-    # 1. Setup Environment Map
-    # envmap = EnvMap(torch.tensor(
-    #     cv2.cvtColor(cv2.imread('assets/hdri/forest.exr', cv2.IMREAD_UNCHANGED), cv2.COLOR_BGR2RGB),
-    #     dtype=torch.float32, device='cuda'
-    # ))
+    print("[TRELLIS.2] Loading models...")
 
     # 2. Load Pipeline
     model_path = "./models/microsoft/TRELLIS.2-4B"
@@ -487,6 +483,9 @@ def generate(input_filelist):
 
     for input in inputs:
 
+        # Empty PyTorch’s CUDA cache
+        torch.cuda.empty_cache()
+
         count += 1
 
         progress = math.floor((float(count) / float(total)) * 100.0)
@@ -504,15 +503,14 @@ def generate(input_filelist):
                 os.makedirs(output_mesh_folder)
 
             image = Image.open(input["filepath"])
+
+            print("[TRELLIS.2] Generating mesh...")
+
             mesh = pipeline.run(image=image,
                                 num_samples=1,
                                 seed=seed)[0]
 
             mesh.simplify(16777216) # nvdiffrast limit
-
-            # 4. Render Video
-            # video = render_utils.make_pbr_vis_frames(render_utils.render_video(mesh, envmap=envmap))
-            # imageio.mimsave(f"{output_folder}/{mesh_name}.mp4", video, fps=15)
 
             # 5. Export to GLB
             glb = o_voxel.postprocess.to_glb(
@@ -549,6 +547,9 @@ def generate(input_filelist):
             smooth_normals_angle = params["smooth_normals_angle"]
 
             fix_mesh(glb_filepath, mesh_scale, smooth_normals, smooth_normals_angle)
+
+            # Optionally, synchronize to make sure the GPU finishes pending work
+            torch.cuda.synchronize()
 
 
 
