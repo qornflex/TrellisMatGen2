@@ -38,6 +38,10 @@ class Pipeline:
 
         _models = {}
         for k, v in args['models'].items():
+            
+            if not v.startswith("ckpts/"):
+                v = f"./models/{v}"
+            
             if hasattr(cls, 'model_names_to_load') and k not in cls.model_names_to_load:
                 continue
             try:
